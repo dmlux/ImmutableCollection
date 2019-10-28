@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -23,7 +24,7 @@ public class ImmutableNAryTree<T> extends AbstractImmutableTree<T> {
     }
 
     @Override
-    public ImmutableList<ImmutableTree<T>> subtrees(T element) {
+    public ImmutableList<ImmutableTree<T>> subtrees(T subtreeRoot) {
         // TODO: implement
         return null;
     }
@@ -93,6 +94,11 @@ public class ImmutableNAryTree<T> extends AbstractImmutableTree<T> {
     public MutableTree<T> asMutableTree() {
         // TODO: implement
         return null;
+    }
+
+    @Override
+    public <M extends MutableTree<T>> M asMutableTree(Function<ImmutableTree<T>, M> allocator) {
+        return allocator.apply(this);
     }
 
     @Nonnull

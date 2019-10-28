@@ -14,5 +14,5 @@ public interface MutableTree<T> extends Tree<T, MutableTree<T>> {
 
     ImmutableTree<T> asImmutableTree();
 
-    ImmutableTree<T> asImmutableTree(BiFunction<int[], Object[], ImmutableTree<T>> allocator);
+    <I extends ImmutableTree<T>> I asImmutableTree(BiFunction<int[], Object[], I> allocator);
 }

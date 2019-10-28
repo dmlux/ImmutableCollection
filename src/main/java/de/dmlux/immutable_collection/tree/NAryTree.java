@@ -25,12 +25,12 @@ public class NAryTree<T> extends AbstractMutableTree<T> {
     }
 
     @Override
-    public ImmutableTree<T> asImmutableTree(BiFunction<int[], Object[], ImmutableTree<T>> allocator) {
+    public <I extends ImmutableTree<T>> I asImmutableTree(BiFunction<int[], Object[], I> allocator) {
         return allocator.apply(extractMemory(), extractElements());
     }
 
     @Override
-    public ImmutableList<MutableTree<T>> subtrees(T element) {
+    public ImmutableList<MutableTree<T>> subtrees(T subtreeRoot) {
         // TODO: implement
         return null;
     }

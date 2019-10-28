@@ -10,7 +10,7 @@ public interface Tree<T, D extends Tree<T, D>> extends Traversable<T>, Collectio
 
     T rootElement();
 
-    ImmutableList<D> subtrees(T element);
+    ImmutableList<D> subtrees(T subtreeRoot);
 
     ImmutableList<D> subtrees();
 
