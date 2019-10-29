@@ -1,18 +1,17 @@
 package de.dmlux.immutable_collection.tree;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 import javax.annotation.Nonnull;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.Spliterator;
-import java.util.Spliterators;
+import javax.print.attribute.standard.MediaSize;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-@SuppressWarnings({"WeakerAccess", "unused"})
+@SuppressWarnings({"unused"})
 public class NAryTree<T> extends AbstractMutableTree<T> {
 
     public NAryTree() {
@@ -31,14 +30,30 @@ public class NAryTree<T> extends AbstractMutableTree<T> {
 
     @Override
     public ImmutableList<MutableTree<T>> subtrees(T subtreeRoot) {
-        // TODO: implement
-        return null;
+        ImmutableList.Builder<MutableTree<T>> subtrees = ImmutableList.builder();
+        ObjectIdentity<T> OID = new ObjectIdentity<>(subtreeRoot);
+        List<Node<T>> roots = elementInformation.get(OID);
+        if (roots.isEmpty())
+            return ImmutableList.of();
+        for (Node<T> root : roots) {
+            NAryTree<T> subtree = new NAryTree<>();
+            subtree.root = root.copy();
+            subtree.elementInformation = compressElementInformation(subtree.root);
+            subtrees.add(subtree);
+        }
+        return subtrees.build();
     }
 
     @Override
     public ImmutableList<MutableTree<T>> subtrees() {
-        // TODO: implement
-        return null;
+        ImmutableList.Builder<MutableTree<T>> subtrees = ImmutableList.builder();
+        for (Node<T> subtreeRoot : root.children) {
+            NAryTree<T> subtree = new NAryTree<>();
+            subtree.root = subtreeRoot.copy();
+            subtree.elementInformation = compressElementInformation(subtreeRoot);
+            subtrees.add(subtree);
+        }
+        return subtrees.build();
     }
 
     @Nonnull

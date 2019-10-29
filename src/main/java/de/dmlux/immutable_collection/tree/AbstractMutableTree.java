@@ -1,12 +1,14 @@
 package de.dmlux.immutable_collection.tree;
 
 import javax.annotation.Nonnull;
+import javax.swing.text.html.HTMLDocument;
 import java.util.*;
+import java.util.function.Consumer;
 
 @SuppressWarnings({"WeakerAccess"})
 public abstract class AbstractMutableTree<T> implements MutableTree<T> {
     protected Node<T> root;
-    private Map<ObjectIdentity<T>, List<Node<T>>> elementInformation;
+    protected Map<ObjectIdentity<T>, List<Node<T>>> elementInformation;
 
     protected AbstractMutableTree() {
         root = null;
@@ -244,5 +246,56 @@ public abstract class AbstractMutableTree<T> implements MutableTree<T> {
     public void clear() {
         root = null;
         elementInformation.clear();
+    }
+
+    protected Map<ObjectIdentity<T>, List<Node<T>>> compressElementInformation(Node<T> root) {
+        Map<ObjectIdentity<T>, List<Node<T>>> newElementInformation = new HashMap<>();
+        traverseNodes(node -> {
+            ObjectIdentity<T> OID = new ObjectIdentity<>(node.element);
+            newElementInformation.computeIfAbsent(OID, k -> new ArrayList<>()).add(node);
+        });
+        return newElementInformation;
+    }
+
+    protected void traverseNodes(Consumer<Node<T>> action) {
+        Objects.requireNonNull(action);
+        InternalIterator<T> iterator = new InternalIterator<>(this);
+        while(iterator.hasNext()) {
+            action.accept(iterator.next());
+        }
+    }
+
+    protected static class InternalIterator<T> implements Iterator<Node<T>> {
+        Queue<Node<T>> nodes = new ArrayDeque<>();
+        Queue<Node<T>> visited = new ArrayDeque<>();
+
+        public InternalIterator(AbstractMutableTree<T> tree) {
+            Objects.requireNonNull(tree);
+            retrieveNodes(tree.root);
+        }
+
+        @Override
+        public boolean hasNext() {
+            return nodes.peek() != null;
+        }
+
+        @Override
+        public Node<T> next() {
+            try {
+                return nodes.remove();
+            } catch(NoSuchElementException e) {
+                throw new NoSuchElementException("Iterator can not supply further elements");
+            }
+        }
+
+        public void retrieveNodes(Node<T> subtreeRoot) {
+            assert subtreeRoot != null;
+            visited.add(subtreeRoot);
+            while (!visited.isEmpty()) {
+                Node<T> current = visited.remove();
+                nodes.add(current);
+                visited.addAll(current.children);
+            }
+        }
     }
 }
