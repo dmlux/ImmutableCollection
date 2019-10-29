@@ -15,6 +15,8 @@ public abstract class AbstractMutableTree<T> implements MutableTree<T> {
         elementInformation = new HashMap<>();
     }
 
+    public abstract Node<T> rootNode();
+
     @Override
     public void setRoot(T element) {
         elementInformation.clear();

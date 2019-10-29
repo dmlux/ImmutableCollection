@@ -1,4 +1,4 @@
-package de.dmlux.immutable_collection.tree;
+package de.dmlux.immutable_collection.tree.iterators;
 
 import java.util.Iterator;
 

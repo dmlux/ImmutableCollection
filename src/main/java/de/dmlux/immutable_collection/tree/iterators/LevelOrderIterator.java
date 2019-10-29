@@ -1,4 +1,7 @@
-package de.dmlux.immutable_collection.tree;
+package de.dmlux.immutable_collection.tree.iterators;
+
+import de.dmlux.immutable_collection.tree.ImmutableTree;
+import de.dmlux.immutable_collection.tree.MutableTree;
 
 public class LevelOrderIterator<T> implements TreeIterator<T> {
 

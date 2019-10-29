@@ -1,10 +1,10 @@
 package de.dmlux.immutable_collection.tree;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
+import de.dmlux.immutable_collection.tree.iterators.*;
 
 import javax.annotation.Nonnull;
-import javax.print.attribute.standard.MediaSize;
+import javax.swing.tree.TreeNode;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -26,6 +26,11 @@ public class NAryTree<T> extends AbstractMutableTree<T> {
     @Override
     public <I extends ImmutableTree<T>> I asImmutableTree(BiFunction<int[], Object[], I> allocator) {
         return allocator.apply(extractMemory(), extractElements());
+    }
+
+    @Override
+    public Node<T> rootNode() {
+        return root;
     }
 
     @Override
@@ -108,27 +113,27 @@ public class NAryTree<T> extends AbstractMutableTree<T> {
 
     @Override
     public TreeIterator<T> preOrderIterator() {
-        return new PreOrderIterator<T>(this);
+        return new PreOrderIterator<>(this);
     }
 
     @Override
     public TreeIterator<T> inOrderIterator() {
-        return new InOrderIterator<T>(this);
+        return new InOrderIterator<>(this);
     }
 
     @Override
     public TreeIterator<T> postOrderIterator() {
-        return new PostOrderIterator<T>(this);
+        return new PostOrderIterator<>(this);
     }
 
     @Override
     public TreeIterator<T> levelOrderIterator() {
-        return new LevelOrderIterator<T>(this);
+        return new LevelOrderIterator<>(this);
     }
 
     @Override
     public TreeIterator<T> depthFirstSearchIterator() {
-        return new DFSIterator<T>(this);
+        return new DFSIterator<>(this);
     }
 
     @Nonnull
@@ -144,10 +149,20 @@ public class NAryTree<T> extends AbstractMutableTree<T> {
     }
 
     private int[] extractMemory() {
-        return new int[0];
+        int[]
     }
 
     private Object[] extractElements() {
         return new Object[0];
+    }
+
+    private ImmutableNAryTree<T> extract() {
+        int[] memory = new int[size() * 2];
+        List<Object> elements = new ArrayList<>();
+        TreeIterator<T> iterator = preOrderIterator();
+        while (iterator.hasNext()) {
+            IteratorNode<T> node = iterator.nextNode();
+
+        }
     }
 }

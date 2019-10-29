@@ -1,5 +1,8 @@
 package de.dmlux.immutable_collection.tree;
 
+import de.dmlux.immutable_collection.tree.iterators.IteratorNode;
+import de.dmlux.immutable_collection.tree.iterators.TreeIterator;
+
 import java.util.Objects;
 import java.util.function.Consumer;
 

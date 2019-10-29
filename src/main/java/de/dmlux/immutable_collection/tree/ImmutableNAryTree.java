@@ -1,6 +1,7 @@
 package de.dmlux.immutable_collection.tree;
 
 import com.google.common.collect.ImmutableList;
+import de.dmlux.immutable_collection.tree.iterators.*;
 
 import javax.annotation.Nonnull;
 import java.util.Iterator;
@@ -67,12 +68,16 @@ public class ImmutableNAryTree<T> extends AbstractImmutableTree<T> {
 
     @Override
     public TreeIterator<T> preOrderIterator() {
-        return new PreOrderIterator<>(this);
+        // TODO: implement
+//        return new PreOrderIterator<>(this);
+        return null;
     }
 
     @Override
     public TreeIterator<T> inOrderIterator() {
-        return new InOrderIterator<>(this);
+        // TODO: implement
+//        return new InOrderIterator<>(this);
+        return null;
     }
 
     @Override
