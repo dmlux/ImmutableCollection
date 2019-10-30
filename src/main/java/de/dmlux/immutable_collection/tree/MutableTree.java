@@ -12,6 +12,8 @@ public interface MutableTree<T> extends Tree<T, MutableTree<T>> {
 
     boolean replaceAll(T element, T newElement);
 
+    void clear();
+
     ImmutableTree<T> asImmutableTree();
 
     <I extends ImmutableTree<T>> I asImmutableTree(BiFunction<int[], Object[], I> allocator);

@@ -1,7 +1,5 @@
 package de.dmlux.immutable_collection.tree;
 
-import javax.annotation.Nonnull;
-import javax.swing.text.html.HTMLDocument;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -15,6 +13,18 @@ public abstract class AbstractMutableTree<T> implements MutableTree<T> {
         elementInformation = new HashMap<>();
     }
 
+    protected AbstractMutableTree(Node<T> root) {
+        this.root = root;
+        elementInformation = new HashMap<>();
+        retrieveNodes(elementInformation, root);
+    }
+
+    protected void retrieveNodes(Map<ObjectIdentity<T>, List<Node<T>>> elementInformation, Node<T> subtreeRoot) {
+        ObjectIdentity<T> OID = new ObjectIdentity<>(subtreeRoot.element);
+        elementInformation.computeIfAbsent(OID, k -> new ArrayList<>()).add(subtreeRoot);
+        subtreeRoot.children.forEach(child -> retrieveNodes(elementInformation, subtreeRoot));
+    }
+
     public abstract Node<T> rootNode();
 
     @Override
@@ -24,8 +34,7 @@ public abstract class AbstractMutableTree<T> implements MutableTree<T> {
     }
 
     private Node<T> generateNode(T element, int level) {
-        Node<T> node = new Node<>(element);
-        node.level = level;
+        Node<T> node = new Node<>(element, level);
         ObjectIdentity<T> OID = new ObjectIdentity<>(element);
         elementInformation.computeIfAbsent(OID, k -> new ArrayList<>()).add(node);
         return node;
@@ -135,122 +144,12 @@ public abstract class AbstractMutableTree<T> implements MutableTree<T> {
     }
 
     @Override
-    public boolean add(T element) {
-        if (root == null) root = generateNode(element, 0);
-        else root.children.add(generateNode(element, 1));
-        return true;
-    }
-
-    @SuppressWarnings({"unchecked"})
-    @Override
-    public boolean remove(Object element) {
-        if (root == null) return false;
-        if (root.element == element) {
-            root = null;
-            elementInformation.clear();
-            return true;
-        }
-        Class<T> clazz = (Class<T>) root.element.getClass();
-        if (clazz.isAssignableFrom(element.getClass()))
-            return remove(root, clazz.cast(element));
-        throw new IllegalArgumentException("Cannot remove object of class " + element.getClass().getName() + ". Expected element of class " + clazz.getName());
-    }
-
-    private boolean remove(Node<T> subtreeRoot, T element) {
-        assert subtreeRoot != null;
-        boolean found = false;
-        List<Node<T>> newChildren = new ArrayList<>();
-        for (Node<T> child : subtreeRoot.children) {
-            if (!found && child.element == element) {
-                removeInstanceFromTree(child);
-                found = true;
-            } else {
-                newChildren.add(child);
-                if (!found)
-                    found = remove(child, element);
-            }
-        }
-        subtreeRoot.children = newChildren;
-        return found;
-    }
-
-    @Override
-    public boolean containsAll(@Nonnull Collection<?> collection) {
-        Objects.requireNonNull(collection);
-        if (root == null) return false;
-        for (Object element : collection)
-            if (!contains(element))
-                return false;
-        return true;
-    }
-
-    @SuppressWarnings({"unchecked"})
-    @Override
-    public boolean addAll(@Nonnull Collection<? extends T> collection) {
-        Objects.requireNonNull(collection);
-        boolean result = false;
-        for (Object object : collection)
-            // TODO: type check element before casting it to T
-            result |= add((T) object);
-        return result;
-    }
-
-    @SuppressWarnings({"unchecked"})
-    @Override
-    public boolean removeAll(@Nonnull Collection<?> collection) {
-        Objects.requireNonNull(collection);
-        if (root == null) return false;
-        if (collection.isEmpty()) return false;
-        Class<T> clazz = (Class<T>) root.element.getClass();
-        Class<?> collectionType = collection.toArray()[0].getClass();
-        if (!collection.isEmpty() && !clazz.isAssignableFrom(collectionType))
-            throw new IllegalArgumentException("Cannot remove object of class " + collectionType.getName() + ". Expected element of class " + clazz.getName());
-        boolean result = false;
-        for (Object object : collection)
-            result |= removeAll(clazz.cast(object));
-        return result;
-    }
-
-    @SuppressWarnings({"unchecked"})
-    @Override
-    public boolean retainAll(@Nonnull Collection<?> collection) {
-        Objects.requireNonNull(collection);
-        if (root == null) return false;
-        if (collection.isEmpty() || !collection.contains(root.element)) {
-            root = null;
-            elementInformation.clear();
-            return true;
-        }
-        Class<T> clazz = (Class<T>) root.element.getClass();
-        Class<?> collectionType = collection.toArray()[0].getClass();
-        if (!clazz.isAssignableFrom(collectionType))
-            throw new IllegalArgumentException("Cannot remove object of class " + collectionType.getName() + ". Expected element of class " + clazz.getName());
-        return retainAll(root, collection);
-    }
-
-    private boolean retainAll(Node<T> subtreeRoot, @Nonnull Collection<?> collection) {
-        assert subtreeRoot != null;
-        assert collection != null;
-        List<Node<T>> newChildren = new ArrayList<>();
-        for (Node<T> child : subtreeRoot.children)
-            if (collection.contains(child.element))
-                newChildren.add(child);
-            else
-                removeInstanceFromTree(child);
-        boolean result = newChildren.size() < subtreeRoot.children.size();
-        for (Node<T> child : newChildren)
-            result |= retainAll(child, collection);
-        subtreeRoot.children = newChildren;
-        return result;
-    }
-
-    @Override
     public void clear() {
         root = null;
         elementInformation.clear();
     }
 
-    protected Map<ObjectIdentity<T>, List<Node<T>>> compressElementInformation(Node<T> root) {
+    protected Map<ObjectIdentity<T>, List<Node<T>>> compressElementInformation() {
         Map<ObjectIdentity<T>, List<Node<T>>> newElementInformation = new HashMap<>();
         traverseNodes(node -> {
             ObjectIdentity<T> OID = new ObjectIdentity<>(node.element);

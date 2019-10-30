@@ -13,6 +13,11 @@ public class Node<T> {
         level = -1;
     }
 
+    Node(T element, int level) {
+        this.element = element;
+        this.level = level;
+    }
+
     public Node<T> copy() {
         Node<T> newNode = new Node<>(element);
         newNode.level = level;

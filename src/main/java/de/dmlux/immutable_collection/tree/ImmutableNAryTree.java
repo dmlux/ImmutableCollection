@@ -36,20 +36,6 @@ public class ImmutableNAryTree<T> extends AbstractImmutableTree<T> {
         return null;
     }
 
-    @Nonnull
-    @Override
-    public Object[] toArray() {
-        // TODO: implement
-        return new Object[0];
-    }
-
-    @Nonnull
-    @Override
-    public <S> S[] toArray(@Nonnull S[] array) {
-        // TODO: implement
-        return null;
-    }
-
     @Override
     public Stream<T> stream() {
         Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(preOrderIterator(), 0);

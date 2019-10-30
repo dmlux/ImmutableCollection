@@ -1,7 +1,6 @@
 package de.dmlux.immutable_collection.tree;
 
-import javax.annotation.Nonnull;
-import java.util.Collection;
+import java.util.NoSuchElementException;
 
 @SuppressWarnings({"WeakerAccess"})
 public abstract class AbstractImmutableTree<T> implements ImmutableTree<T> {
@@ -18,64 +17,30 @@ public abstract class AbstractImmutableTree<T> implements ImmutableTree<T> {
         this.elements = elements;
     }
 
+    @SuppressWarnings({"unchecked"})
     @Override
     public T rootElement() {
-        return null;
+        if (memory.length == 0)
+            throw new NoSuchElementException("No root element available");
+        assert memory.length >= 2;
+        return (T) elements[memory[1]];
     }
 
     @Override
     public int size() {
-        return 0;
+        return memory.length;
     }
 
     @Override
     public boolean isEmpty() {
+        return size() == 0;
+    }
+
+    @Override
+    public boolean contains(T o) {
+        for (Object element : elements)
+            if (element == o)
+                return true;
         return false;
-    }
-
-    @Override
-    public boolean contains(Object o) {
-        return false;
-    }
-
-    @Deprecated
-    @Override
-    public boolean add(T t) {
-        throw new UnsupportedOperationException("Cannot modify immutable object");
-    }
-
-    @Deprecated
-    @Override
-    public boolean remove(Object o) {
-        throw new UnsupportedOperationException("Cannot modify immutable object");
-    }
-
-    @Override
-    public boolean containsAll(@Nonnull Collection<?> collection) {
-        return false;
-    }
-
-    @Deprecated
-    @Override
-    public boolean addAll(@Nonnull Collection<? extends T> collection) {
-        throw new UnsupportedOperationException("Cannot modify immutable object");
-    }
-
-    @Deprecated
-    @Override
-    public boolean removeAll(@Nonnull Collection<?> collection) {
-        throw new UnsupportedOperationException("Cannot modify immutable object");
-    }
-
-    @Deprecated
-    @Override
-    public boolean retainAll(@Nonnull Collection<?> collection) {
-        throw new UnsupportedOperationException("Cannot modify immutable object");
-    }
-
-    @Deprecated
-    @Override
-    public void clear() {
-        throw new UnsupportedOperationException("Cannot modify immutable object");
     }
 }
